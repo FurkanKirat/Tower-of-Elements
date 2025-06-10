@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UnityEditor;
+using UnityEngine;
 
 namespace Managers
 {
@@ -10,7 +12,7 @@ namespace Managers
         public static bool FileExists(string path) => 
             File.Exists(path);
         
-        public static void WriteText(string path, string content) => 
+        public static void WriteAllText(string path, string content) => 
             File.WriteAllText(path, content);
         
         public static void AppendText(string path, string content) =>
@@ -18,9 +20,33 @@ namespace Managers
         
         public static string ReadText(string path) => 
             File.ReadAllText(path);
-        
-        public static void DeleteFile(string path) =>
-            File.Delete(path);
+
+        public static void DeleteFile(string path)
+        {
+#if UNITY_EDITOR
+            if (path.StartsWith(Application.dataPath))
+            {
+                string unityPath = path.Replace(Application.dataPath, "Assets").Replace("\\", "/");
+                if (AssetDatabase.DeleteAsset(unityPath))
+                    Debug.Log($"Deleted asset: {unityPath}");
+                else
+                    Debug.LogWarning($"Failed to delete asset: {unityPath}");
+                
+                string metaPath = path + ".meta";
+                if (File.Exists(metaPath))
+                    File.Delete(metaPath);
+                
+                AssetDatabase.Refresh();
+                Resources.UnloadUnusedAssets(); 
+            }
+            else
+#endif
+            {
+                if (File.Exists(path))
+                    File.Delete(path);
+            }
+        }
+
         
         public static List<string> GetFilesInDirectory(string directory, string extension = ".json") => 
             Directory.Exists(directory) ? 

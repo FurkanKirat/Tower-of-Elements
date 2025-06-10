@@ -10,6 +10,7 @@ namespace Managers
             Formatting = Formatting.Indented,
             NullValueHandling = NullValueHandling.Ignore
         };
+        
 
         public static T LoadFromText<T>(string jsonText)
         {
@@ -30,22 +31,23 @@ namespace Managers
             }
             catch (Exception e)
             {
-                GameLogger.Error($"Failed to load JSON from {filePath}: {e.Message}");
+                GameLogger.Exception(e, $"Failed to load JSON from {filePath}");
                 return default;
             }
         }
         
-        public static void Save<T>(string filePath, T data)
+        public static void Save<T>(string filePath, T data, bool isIndented = false)
         {
             try
             {
-                FileManager.EnsureDirectoryExists(filePath);
+                string directory = PathHelper.GetDirectoryName(filePath);
+                FileManager.EnsureDirectoryExists(directory);
                 var json = JsonConvert.SerializeObject(data, Settings);
-                FileManager.WriteText(filePath, json);
+                FileManager.WriteAllText(filePath, json);
             }
             catch (Exception e)
             {
-                GameLogger.Error($"Failed to save JSON to {filePath}: {e.Message}");
+                GameLogger.Exception(e, $"Failed to save JSON to {filePath}");
             }
         }
         

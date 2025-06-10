@@ -14,6 +14,6 @@ namespace Core.Database
 
         public static Sprite Get(string id) => _data.GetValueOrDefault(id);
 
-        public static IReadOnlyDictionary<string, Sprite> GetAll => _data;
+        public static IReadOnlyDictionary<string, Sprite> AllTiles => _data;
     }
 }

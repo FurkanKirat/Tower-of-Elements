@@ -4,7 +4,7 @@
     {
         public static class RootFolders
         {
-            public const string Maps = "maps";
+            public const string Maps = "Data/Maps";
             public const string Logs = "logs";
             public const string Settings = "settings";
             public const string Saves = "saves";

@@ -5,10 +5,15 @@ namespace Core.GridSystem
 {
     public class GridManager : IGridManager
     {
-        public int Width => 15;
+        public int Width => 20;
         public int Height => 10;
-        private GridCell[,] _cells;
-        
+        private readonly GridCell[,] _cells;
+
+        public GridManager()
+        {
+            _cells = new GridCell[Width, Height];
+        }
+
         public IGridCell GetCell(int x, int y)
         {
             return _cells[x, y];

@@ -1,6 +1,9 @@
-﻿namespace Core.GridSystem
+﻿using System;
+
+namespace Core.GridSystem
 {
-    public struct SpriteLayer
+    [Serializable]
+    public class SpriteLayer
     {
         public string SpriteId { get; set; }
         public Direction Direction { get; set; }

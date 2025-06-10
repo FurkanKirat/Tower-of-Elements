@@ -7,4 +7,12 @@
         Down,
         Left
     }
+
+    public static class DirectionExtensions
+    {
+        public static float ToDegrees(this Direction direction)
+        {
+            return (float)direction * 90f;
+        }
+    }
 }
