@@ -1,8 +1,9 @@
 ﻿#if UNITY_EDITOR
 using System.Collections.Generic;
+using Core.Database;
 using UnityEngine;
 
-namespace Core.Database
+namespace Editor.Helpers
 {
     public static class TileSpriteDatabase
     {

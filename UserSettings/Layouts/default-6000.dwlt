@@ -218,8 +218,8 @@ MonoBehaviour:
     y: 0
     width: 835.2
     height: 466.4
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 202, y: 226}
+  m_MaxSize: {x: 4002, y: 4026}
   m_ActualView: {fileID: 18}
   m_Panes:
   - {fileID: 14}
@@ -273,8 +273,8 @@ MonoBehaviour:
     y: 0
     width: 417.59998
     height: 812.8
-  m_MinSize: {x: 275, y: 50}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 276, y: 76}
+  m_MaxSize: {x: 4001, y: 4026}
   m_ActualView: {fileID: 17}
   m_Panes:
   - {fileID: 17}
@@ -302,7 +302,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 545.60004
+    y: 490.4
     width: 1117.4
     height: 320.4
   m_SerializedDataModeController:
@@ -338,7 +338,7 @@ MonoBehaviour:
   m_Pos:
     serializedVersion: 2
     x: 0
-    y: 79.200005
+    y: 24
     width: 282.2
     height: 440.4
   m_SerializedDataModeController:
@@ -360,18 +360,18 @@ MonoBehaviour:
       m_ExpandedIDs: 2e24ffff14aaffff82d4ffff02f5ffff52f5ffffe2f6ffff08fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
-        m_Name: TileDebugger
-        m_OriginalName: TileDebugger
+        m_Name: 
+        m_OriginalName: 
         m_EditFieldRect:
           serializedVersion: 2
           x: 0
           y: 0
           width: 0
           height: 0
-        m_UserData: -47954
+        m_UserData: 0
         m_IsWaitingForDelay: 0
         m_IsRenaming: 0
-        m_OriginalEventType: 0
+        m_OriginalEventType: 11
         m_IsRenamingFilename: 0
         m_TrimLeadingAndTrailingWhitespace: 0
         m_ClientGUIView: {fileID: 8}
@@ -1198,7 +1198,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 147.6}
     m_SelectedIDs: 0cb30000
     m_LastClickedID: 45836
-    m_ExpandedIDs: 00000000aab0000090b2000092b2000096b200009eb20000a4b2000000b3000000ca9a3bffffff7f
+    m_ExpandedIDs: 
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1227,7 +1227,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 00000000aab00000
+    m_ExpandedIDs: 
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1306,8 +1306,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Inspector\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 1118.4
-    y: 79.200005
+    x: 1119.4
+    y: 24
     width: 416.59998
     height: 786.8
   m_SerializedDataModeController:
@@ -1355,8 +1355,8 @@ MonoBehaviour:
     m_TextWithWhitespace: "Game\u200B"
   m_Pos:
     serializedVersion: 2
-    x: 283.2
-    y: 79.200005
+    x: 284.2
+    y: 24
     width: 833.2
     height: 440.4
   m_SerializedDataModeController:
@@ -1430,7 +1430,7 @@ MonoBehaviour:
       height: 864
     m_MinimalGUI: 1
   m_defaultScale: 0.48541665
-  m_LastWindowPixelSize: {x: 1041.5, y: 550.5}
+  m_LastWindowPixelSize: {x: 833.2, y: 440.4}
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1
   m_LowResolutionForAspectRatios: 01000000000000000000
