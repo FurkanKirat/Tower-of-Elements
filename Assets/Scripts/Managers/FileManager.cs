@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Managers.Log;
 using UnityEditor;
 using UnityEngine;
 
@@ -28,9 +29,9 @@ namespace Managers
             {
                 string unityPath = path.Replace(Application.dataPath, "Assets").Replace("\\", "/");
                 if (AssetDatabase.DeleteAsset(unityPath))
-                    Debug.Log($"Deleted asset: {unityPath}");
+                    GameLogger.Log($"Deleted asset: {unityPath}");
                 else
-                    Debug.LogWarning($"Failed to delete asset: {unityPath}");
+                    GameLogger.Warn($"Failed to delete asset: {unityPath}");
                 
                 string metaPath = path + ".meta";
                 if (File.Exists(metaPath))

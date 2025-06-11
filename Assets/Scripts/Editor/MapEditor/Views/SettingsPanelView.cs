@@ -131,7 +131,7 @@ namespace Editor.MapEditor.Views
                 layer.Direction = (Direction)EditorGUI.EnumPopup(new Rect(rect.x + w + 5, rect.y, w - 5, EditorGUIUtility.singleLineHeight), layer.Direction);
 
                 if (layer.SpriteId == null) return;
-                var sprite = Core.Database.TileSpriteDatabase.Get(layer.SpriteId);
+                var sprite = TileSpriteDatabase.Get(layer.SpriteId);
                 if (sprite != null)
                 {
                     GUI.DrawTexture(new Rect(rect.x + 2 * w + 10, rect.y, EditorGUIUtility.singleLineHeight, EditorGUIUtility.singleLineHeight), sprite.texture, ScaleMode.ScaleToFit);

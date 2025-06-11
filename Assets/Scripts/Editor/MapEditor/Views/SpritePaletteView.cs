@@ -1,4 +1,5 @@
 ﻿using Editor.MapEditor.Windows;
+using Managers.Log;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ namespace Editor.MapEditor.Views
                 SpriteSelectorPopupWindow.Show(id =>
                 {
                     _selectedSpriteId = id;
-                    Debug.Log("Selected Sprite: " + id);
+                    GameLogger.Log("Selected Sprite: " + id);
                 });
             }
             GUILayout.EndHorizontal();

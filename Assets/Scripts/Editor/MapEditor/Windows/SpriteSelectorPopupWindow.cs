@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
-using Core.Database;
 
 namespace Editor.MapEditor.Windows
 {
@@ -17,7 +16,7 @@ namespace Editor.MapEditor.Windows
             var window = GetWindow<SpriteSelectorPopupWindow>(true, "Select Sprite", true);
             window.position = new Rect(Screen.width / 2f, Screen.height / 2f, 600, 200);
             window._onSpriteSelected = onSpriteSelected;
-            window._sprites = TileSpriteDatabase.AllTiles.Values;
+            window._sprites = TileSpriteDatabase.All.Values;
             window.ShowUtility();
         }
 

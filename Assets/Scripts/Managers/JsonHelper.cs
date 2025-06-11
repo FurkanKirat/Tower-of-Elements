@@ -1,4 +1,5 @@
 ﻿using System;
+using Managers.Log;
 using Newtonsoft.Json;
 
 namespace Managers
@@ -50,7 +51,5 @@ namespace Managers
                 GameLogger.Exception(e, $"Failed to save JSON to {filePath}");
             }
         }
-        
-        
     }
 }

@@ -14,5 +14,10 @@
         {
             return (float)direction * 90f;
         }
+
+        public static float ToClockwiseDegrees(this Direction direction)
+        {
+            return -direction.ToDegrees();
+        }
     }
 }

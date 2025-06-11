@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Managers
+namespace Managers.Log
 {
     public static class GameLogger
     {
