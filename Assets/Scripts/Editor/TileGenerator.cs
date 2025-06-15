@@ -1,11 +1,13 @@
-﻿namespace Editor
+﻿
+
+namespace Editor
 {
     #if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using System.IO;
-
+using Managers.Log;
 public static class TileAssetGenerator
 {
     private const string spriteFolder = "Assets/Resources/Art/Tiles";
@@ -77,7 +79,7 @@ public static class TileAssetGenerator
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log($"[TileAssetGenerator] Fixed {fixedSprites} sprites and created {createdTiles} new tiles.");
+        GameLogger.Log($"[TileAssetGenerator] Fixed {fixedSprites} sprites and created {createdTiles} new tiles.");
     }
 }
 #endif

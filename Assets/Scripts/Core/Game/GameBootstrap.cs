@@ -7,7 +7,10 @@ namespace Core.Game
     {
         private void Awake()
         {
+            Application.targetFrameRate = 60;
             TileDatabase.Load();
+            TowerDataDatabase.Load();
+            TowerAssetDatabase.Load();
         }
     }
 }

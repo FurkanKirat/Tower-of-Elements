@@ -5,9 +5,6 @@ namespace Core.GridSystem
 {
     public interface IGridManager
     {
-        public int Width { get; }
-        public int Height { get; }
-        
         IGridCell GetCell(int x, int y);
         bool IsInsideBounds(int x, int y);
         

@@ -1,13 +1,16 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using Core.Commands;
 using Core.Constants;
 using Core.GridSystem;
 using Core.Math;
 using UnityEditor;
 using UnityEngine;
-using Core.Database;
 using Core.Entities;
 using Core.Map;
 using Editor.Helpers;
+using Editor.MapEditor.Handlers;
+using Editor.MapEditor.Tools;
 using Editor.MapEditor.Views;
 using Managers;
 
@@ -16,73 +19,79 @@ namespace Editor.MapEditor.Windows
     public class MapEditorWindow : EditorWindow
     {
         private MapData _mapData;
-        private GridCell[,] _grid;
 
         private PanAndZoomHandler _panAndZoom;
-        private SpritePaletteView _paletteView;
         private SettingsPanelView _settingsView;
         private GridView _gridView;
         private MapSelectionPanelView _mapSelectionPanel;
-
-        private const string MapsDirectory = PathNames.RootFolders.Maps;
-        private bool _isReadOnlyMode = false;
-        [MenuItem("Tools/Isometric Map Editor")]
-        public static void ShowWindow() => GetWindow<MapEditorWindow>("Isometric Map Editor");
+        private CommandManager _commandManager;
+        private EditorKeyboardInputHandler _keyboardInputHandler;
+        private EditorMouseDragHandler _mouseDragHandler;
+        private ToolPanelView _toolPanel;
+        private ToolManager _toolManager;
+        
+        private double _lastDrawTime;
+        private const double FrameTime = 1.0 / 60.0;
+        
+        private string _mapsFullDirectory;
+        [MenuItem("Tools/Map Editor")]
+        public static void ShowWindow() => GetWindow<MapEditorWindow>("Map Editor");
 
         private void OnEnable()
         {
-            _mapData = new MapData
-            {
-                mapId = "",
-                cells = new List<GridCell>(),
-                enemySpawn = new Vec2Int(0, 0),
-                enemies = new List<EnemyData>(),
-            };
-            _grid = new GridCell[GridConstants.GridWidth, GridConstants.GridHeight];
-            InitGrid();
+            _mapsFullDirectory = PathHelper.CombineWithResources(PathNames.RootFolders.Maps);
             TileSpriteDatabase.Load();
-
+            _commandManager = new CommandManager();
             _panAndZoom = new PanAndZoomHandler();
-            _paletteView = new SpritePaletteView();
-            _settingsView = new SettingsPanelView();
-            _settingsView.SetMapData(_mapData);
-            _gridView = new GridView(
-                _grid,
-                _panAndZoom.Zoom,
-                _panAndZoom.PanOffset,
-                GridConstants.TileWidth, 
-                GridConstants.TileHeight,
-                _isReadOnlyMode
-            );
+            _settingsView = new SettingsPanelView(_commandManager);
             _mapSelectionPanel = new MapSelectionPanelView(CreateNewMap, LoadFromJson);
+
+            _toolManager = new ToolManager();
+            
+            var brushTool = new BrushTool(_commandManager);
+            _toolManager.RegisterTool(brushTool);
+            
+            _toolPanel = new ToolPanelView(new ITool[] { brushTool });
+
+            _keyboardInputHandler = new EditorKeyboardInputHandler(_commandManager, _toolManager);
+            _mouseDragHandler = new EditorMouseDragHandler();
+            CreateNewMap();
+            EditorApplication.update += EditorUpdate;
         }
+        
+        private void OnDisable()
+        {
+            EditorApplication.update -= EditorUpdate;
+        }
+
+        
+        private void EditorUpdate()
+        {
+            double currentTime = EditorApplication.timeSinceStartup;
+            if (currentTime - _lastDrawTime >= FrameTime)
+            {
+                _lastDrawTime = currentTime;
+                Repaint();
+            }
+        }
+
 
         private void OnGUI()
         {
-            var directory = PathHelper.CombineWithResources(MapsDirectory);
-            var maps = FileManager.GetFilesInDirectory(directory,".json");
+            _keyboardInputHandler.HandleInput();
+            
+            var maps = FileManager.GetFilesInDirectory(_mapsFullDirectory,PathNames.Extensions.Json);
             _mapSelectionPanel.Draw(maps);
             _panAndZoom.HandleEvents(_gridView.Bounds);
-            _isReadOnlyMode = GUILayout.Toggle(_isReadOnlyMode, "Read-Only Mode", "Button", GUILayout.Width(150));
-
-            GUILayout.Label("Isometric Map Editor", EditorStyles.boldLabel);
             
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Map Name", EditorStyles.boldLabel, GUILayout.Width(100));
-            _mapData.mapId = GUILayout.TextField(_mapData.mapId, GUILayout.Width(300));
-            GUILayout.EndHorizontal();
-
-            _settingsView.SelectedSpriteId = _paletteView.DrawAndSelectSprite();
+            DrawRenameField(); 
+            
+            
             _settingsView.Draw();
-
-            _gridView.Draw(
-                _settingsView.SelectedSpriteId,
-                _settingsView.SelectedLayerIndex,
-                _settingsView.SelectedDirection,
-                _isReadOnlyMode
-            );
+            _gridView.Draw();
             _settingsView.SelectedCellPos = _gridView.SelectedCellPos;
-            
+            if(_toolManager.Current != null) _toolPanel.Draw(_toolManager.Current);
+
             if (GUILayout.Button("Save Map"))
                 SaveToJson();
         }
@@ -90,25 +99,39 @@ namespace Editor.MapEditor.Windows
         private void InitGrid()
         {
             for (int x = 0; x < GridConstants.GridWidth; x++)
-                for (int y = 0; y < GridConstants.GridHeight; y++)
-                    _grid[x, y] = new GridCell
-                    {
-                        Position = new Vec2Int(x, y),
-                        GridType = GridType.Empty
-                    };
+            for (int y = 0; y < GridConstants.GridHeight; y++)
+            {
+                _mapData.Grid[x, y] = new GridCell
+                {
+                    Position = new Vec2Int(x, y),
+                    GridType = GridType.Empty
+                };
+                _mapData.Grid[x,y].EnsureInitialized();
+            }
+                    
         }
+        
+
+        private void DrawRenameField()
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Map Name", EditorStyles.boldLabel, GUILayout.Width(100));
+
+            EditorGUI.BeginChangeCheck();
+            _mapData.mapId = EditorGUILayout.TextField(_mapData.mapId, GUILayout.Width(300));
+            GUILayout.EndHorizontal();
+            
+        }
+
 
         private void SaveToJson()
         {
             _mapData.cells.Clear();
-            foreach (var cell in _grid)
-                _mapData.cells.Add(cell);
+            _mapData.UpdateCellList();
 
             string fileName = _mapData.mapId + PathNames.Extensions.Json;
-
-            string fullDirectoryPath = PathHelper.CombineWithResources(MapsDirectory);
-            string location = PathHelper.Combine(fullDirectoryPath, fileName);
-            JsonHelper.Save(location, _mapData);
+            string location = PathHelper.Combine(_mapsFullDirectory, fileName);
+            JsonHelper.Save(location, _mapData, false);
         }
 
         private void CreateNewMap()
@@ -120,28 +143,39 @@ namespace Editor.MapEditor.Windows
                 enemySpawn = new Vec2Int(0, 0),
                 enemies = new List<EnemyData>()
             };
-            _grid = new GridCell[GridConstants.GridWidth, GridConstants.GridHeight];
+            _mapData.UpdateGrid();
+            InitGrid();
+            
             _gridView = new GridView(
-                _grid,
+                _mapData.Grid,
                 _panAndZoom.Zoom,
                 _panAndZoom.PanOffset,
                 GridConstants.TileWidth, 
                 GridConstants.TileHeight,
-                _isReadOnlyMode
+                _toolManager,
+                _mouseDragHandler
             );
             _settingsView.SetMapData(_mapData);
-            InitGrid();
             Repaint();
         }
-        private void LoadFromJson(string mapId)
+        private void LoadFromJson(string mapIdWithExtension)
         {
-            _mapData = JsonHelper.Load<MapData>(mapId);
-            foreach (var cell in _mapData.cells)
-            {
-                _grid[cell.Position.x, cell.Position.y] = cell;
-            }
+            var mapId = Path.GetFileNameWithoutExtension(mapIdWithExtension);
+            _mapData = MapLoader.LoadMap(mapId);
+            
+            _gridView = new GridView(
+                _mapData.Grid,
+                _panAndZoom.Zoom,
+                _panAndZoom.PanOffset,
+                GridConstants.TileWidth,
+                GridConstants.TileHeight,
+                _toolManager,
+                _mouseDragHandler
+            );
+            
             _settingsView.SetMapData(_mapData);
             Repaint();
         }
+        
     }
 }

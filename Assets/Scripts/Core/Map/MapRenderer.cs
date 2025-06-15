@@ -1,28 +1,25 @@
 ﻿using Core.Constants;
+using Core.Database;
 using Core.GridSystem;
 using Managers;
 using Managers.Log;
+using UnityEngine;
+using UnityEngine.Tilemaps;
 
 namespace Core.Map
 {
-    using UnityEngine;
-    using UnityEngine.Tilemaps;
-    using Database;
-
     public class MapRenderer : MonoBehaviour
     {
         [Header("Tilemap Layers")]
         private Tilemap[] _tilemapLayers;
+        [SerializeField] private GameObject tilemapLayerPrefab;
         [SerializeField] private Grid grid;
 
         private void Awake()
         {
-            _tilemapLayers = grid.GetComponentsInChildren<Tilemap>();
-            grid.transform.position = new Vector3(
-                -GridConstants.GridWidth / 2f,
-                -GridConstants.GridHeight / 2f,
-                0
-            );
+            FitCameraExactly(GridConstants.GridWidth, GridConstants.GridHeight);
+            
+            InitTilemapLayers();
         }
         public void Render(GridCell[,] mapGrid)
         {
@@ -39,7 +36,7 @@ namespace Core.Map
                     for (int i = 0; i < cell.SpriteLayers.Count; i++)
                     {
                         var layer = cell.SpriteLayers[i];
-                        if (string.IsNullOrEmpty(layer.SpriteId)) continue;
+                        if (string.IsNullOrEmpty(layer?.SpriteId)) continue;
 
                         var tile = TileDatabase.Get(layer.SpriteId);
                         LogTileIntegrity(layer.SpriteId, tile);
@@ -59,6 +56,51 @@ namespace Core.Map
                 tilemap.ClearAllTiles();
             }
         }
+
+        private void InitTilemapLayers()
+        {
+            foreach (Transform child in grid.transform)
+            {
+                Destroy(child.gameObject);
+            }
+            
+            _tilemapLayers = new Tilemap[LayerConstants.LayerCount];
+
+            for (int i = 0; i < _tilemapLayers.Length; i++)
+            {
+                var obj = Instantiate(tilemapLayerPrefab, grid.transform);
+                var tilemap = obj.GetComponent<Tilemap>();
+                tilemap.name = $"Tilemap Layer {LayerConstants.LayerNames[i]}";
+                _tilemapLayers[i] = tilemap;
+                var tilemapRenderer = obj.GetComponent<TilemapRenderer>();
+                tilemapRenderer.sortingOrder = i;
+            }
+            
+        }
+        
+        void FitCameraExactly(int gridWidth, int gridHeight)
+        {
+            float screenAspect = (float)Screen.width / Screen.height;
+            float targetAspect = (float)gridWidth / gridHeight;
+
+            float camSize;
+
+            if (screenAspect >= targetAspect)
+            {
+                // Ekran daha genişse → genişlik sınırlayıcı
+                camSize = (gridWidth / screenAspect) / 2f;
+            }
+            else
+            {
+                // Ekran daha darsa → yükseklik sınırlayıcı
+                camSize = gridHeight / 2f;
+            }
+
+            Camera.main.orthographicSize = camSize;
+            Camera.main.transform.position = new Vector3(gridWidth / 2f, gridHeight / 2f, -10f);
+        }
+
+
         
         private void LogTilemapLayerWarnings()
         {

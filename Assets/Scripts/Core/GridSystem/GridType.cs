@@ -4,6 +4,6 @@
     {
         Empty,
         Path,
-        Tower
+        Buildable
     }
 }

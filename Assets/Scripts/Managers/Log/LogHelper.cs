@@ -71,7 +71,7 @@ namespace Managers.Log
             GameLogger.Log(sb.ToString());
         }
         
-        public static void LogObject(object obj, string title = "Object")
+        public static void LogObject<T>(T obj, string title = "Object")
         {
             if (obj == null)
             {
@@ -101,7 +101,16 @@ namespace Managers.Log
             }
         }
 
-        // Contract Resolver: Unity field'larını atla
+        public static void LogObject<T>(T obj, Func<T, string> func, string title = "Object")
+        {
+            if (obj == null)
+            {
+                GameLogger.Warn($"{title} is null");
+                return;
+            }
+            GameLogger.Log(func(obj));
+        }
+        
         private class SafeUnityResolver : DefaultContractResolver
         {
             protected override JsonContract CreateContract(Type objectType)

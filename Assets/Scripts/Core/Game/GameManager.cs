@@ -1,20 +1,21 @@
-﻿namespace Core.Game
+﻿using Core.GridSystem;
+
+namespace Core.Game
 {
     using Map;
-    using GridSystem;
     using UnityEngine;
 
     public class GameManager : MonoBehaviour
     {
         [SerializeField] private MapRenderer mapRenderer;
         private MapData _mapData;
-        private GridCell[,] _gridCells;
+        private IGridManager _gridManager;
 
         private void Start()
         {
             LoadMap();
-            _gridCells = MapConverter.ToGridArray(_mapData);
-            mapRenderer.Render(_gridCells);
+            _gridManager = new GridManager(_mapData);
+            mapRenderer.Render(_mapData.Grid);
         }
 
         private void LoadMap()

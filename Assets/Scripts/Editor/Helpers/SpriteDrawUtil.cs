@@ -1,7 +1,5 @@
-﻿using Core.Database;
-using Core.GridSystem;
+﻿using Core.GridSystem;
 using Core.Math;
-using Managers;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,25 +7,11 @@ namespace Editor.Helpers
 {
     public static class SpriteDrawUtil
     {
-        public static void DrawSpriteWithUV(Sprite sprite, Rect drawRect)
-        {
-            if (sprite == null) return;
-    
-            Rect texCoords = new Rect(
-                sprite.rect.x / sprite.texture.width,
-                sprite.rect.y / sprite.texture.height,
-                sprite.rect.width / sprite.texture.width,
-                sprite.rect.height / sprite.texture.height
-            );
-    
-            GUI.DrawTextureWithTexCoords(drawRect, sprite.texture, texCoords);
-        }
-    
         public static void DrawCellLayers(GridCell cell, Rect tileRect)
         {
             foreach (var layer in cell.SpriteLayers)
             {
-                if(layer.SpriteId == null) continue;
+                if(layer?.SpriteId == null) continue;
                 var sprite = TileSpriteDatabase.Get(layer.SpriteId);
                 if (sprite == null) continue;
 

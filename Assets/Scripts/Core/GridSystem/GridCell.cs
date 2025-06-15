@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Core.Constants;
 using Core.Math;
 using Core.Tower;
 using Newtonsoft.Json;
@@ -9,54 +10,68 @@ namespace Core.GridSystem
     [Serializable]
     public class GridCell : IGridCell
     {
-        private List<SpriteLayer> _spriteLayers = new();
+        [JsonProperty("SpriteLayers")]
+        private SpriteLayer[] _spriteLayers = new SpriteLayer[LayerConstants.LayerCount];
         
         public GridType GridType { get; set; }
         public Vec2Int Position { get; set;}
         public TowerInstance TowerInstance { get; set;}
+        
+        [JsonIgnore]
         public IReadOnlyList<SpriteLayer> SpriteLayers => _spriteLayers;
         
 #if UNITY_EDITOR
         [JsonIgnore]
-        public List<SpriteLayer> EditableSpriteLayers => _spriteLayers;
+        public SpriteLayer[] EditableSpriteLayers => _spriteLayers;
 #endif
 
         
         public void SetLayer(int index, SpriteLayer layer)
         {
             if (_spriteLayers == null)
-                _spriteLayers = new List<SpriteLayer>();
-            
-            while (_spriteLayers.Count <= index)
-                _spriteLayers.Add(null);
+                _spriteLayers = new SpriteLayer[LayerConstants.LayerCount];
+
+            if (index < 0 || index >= LayerConstants.LayerCount)
+                return;
 
             _spriteLayers[index] = layer;
         }
         
         public void RecalculateGridType()
         {
-            bool hasPath = false;
-            bool hasTower = false;
-
-            foreach (var layer in _spriteLayers)
+            if (_spriteLayers[LayerConstants.Path]?.SpriteId != null)
             {
-                if (layer == null || string.IsNullOrEmpty(layer.SpriteId))
-                    continue;
-
-                if (layer.SpriteId.StartsWith("path"))
-                    hasPath = true;
-                else if (layer.SpriteId.StartsWith("tower_base"))
-                    hasTower = true;
-            }
-
-            if (hasPath)
                 GridType = GridType.Path;
-            else if (hasTower)
-                GridType = GridType.Tower;
+                return;
+            }
+            
+            var groundId = _spriteLayers[LayerConstants.Ground]?.SpriteId;
+
+                
+            if (groundId != null && groundId.StartsWith(TileConstants.TowerGroundPrefix))
+                GridType = GridType.Buildable;
             else
                 GridType = GridType.Empty;
         }
+        
+        public void EnsureInitialized()
+        {
+            if (_spriteLayers == null || _spriteLayers.Length != LayerConstants.LayerCount)
+                _spriteLayers = new SpriteLayer[LayerConstants.LayerCount];
 
+            for (int i = 0; i < _spriteLayers.Length; i++)
+            {
+                if (_spriteLayers[i] == null)
+                    _spriteLayers[i] = new SpriteLayer();
+            }
+        }
+
+
+        public override string ToString()
+        {
+            return
+                $"{nameof(_spriteLayers)}: {_spriteLayers}, {nameof(GridType)}: {GridType}, {nameof(Position)}: {Position}, {nameof(TowerInstance)}: {TowerInstance}";
+        }
     }
 
     

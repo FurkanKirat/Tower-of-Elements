@@ -6,16 +6,23 @@ namespace Managers
 {
     public static class JsonHelper
     {
-        private static readonly JsonSerializerSettings Settings = new()
+        private static readonly JsonSerializerSettings IndentedSettings = new()
         {
             Formatting = Formatting.Indented,
             NullValueHandling = NullValueHandling.Ignore
         };
+
+        private static readonly JsonSerializerSettings CompactSettings = new()
+        {
+            Formatting = Formatting.None,
+            NullValueHandling = NullValueHandling.Ignore
+        };
+
         
 
         public static T LoadFromText<T>(string jsonText)
         {
-            return JsonConvert.DeserializeObject<T>(jsonText, Settings);
+            return JsonConvert.DeserializeObject<T>(jsonText, CompactSettings);
         }
         public static T Load<T>(string filePath)
         {
@@ -28,7 +35,7 @@ namespace Managers
             try
             {
                 var json = FileManager.ReadText(filePath);
-                return JsonConvert.DeserializeObject<T>(json, Settings);
+                return JsonConvert.DeserializeObject<T>(json, CompactSettings);
             }
             catch (Exception e)
             {
@@ -37,13 +44,13 @@ namespace Managers
             }
         }
         
-        public static void Save<T>(string filePath, T data, bool isIndented = false)
+        public static void Save<T>(string filePath, T data, bool indented = false)
         {
             try
             {
                 string directory = PathHelper.GetDirectoryName(filePath);
                 FileManager.EnsureDirectoryExists(directory);
-                var json = JsonConvert.SerializeObject(data, Settings);
+                var json = JsonConvert.SerializeObject(data, indented ? IndentedSettings : CompactSettings);
                 FileManager.WriteAllText(filePath, json);
             }
             catch (Exception e)
@@ -51,5 +58,20 @@ namespace Managers
                 GameLogger.Exception(e, $"Failed to save JSON to {filePath}");
             }
         }
+        
+        public static void SaveEncrypted<T>(T data, string path)
+        {
+            string json = JsonConvert.SerializeObject(data);
+            string encrypted = EncryptionManager.Encrypt(json);
+            FileManager.WriteAllText(path, encrypted);
+        }
+
+        public static T LoadEncrypted<T>(string path)
+        {
+            string encrypted = FileManager.ReadText(path);
+            string json = EncryptionManager.Decrypt(encrypted);
+            return JsonConvert.DeserializeObject<T>(json);
+        }
+
     }
 }

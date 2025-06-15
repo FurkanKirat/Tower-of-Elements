@@ -9,16 +9,16 @@ namespace Core.Map
     {
         public static GridCell[,] ToGridArray(MapData mapData)
         {
-            int weight = GridConstants.GridWidth;
+            int width = GridConstants.GridWidth;
             int height = GridConstants.GridHeight;
-            var grid = new GridCell[weight, height];
+            var grid = new GridCell[width, height];
 
             foreach (var cell in mapData.cells)
             {
                 var x = cell.Position.x;
                 var y = cell.Position.y;
 
-                if (x >= 0 && x < weight && y >= 0 && y < height)
+                if (x >= 0 && x < width && y >= 0 && y < height)
                 {
                     grid[x, y] = cell;
                 }

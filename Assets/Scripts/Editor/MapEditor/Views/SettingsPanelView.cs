@@ -1,20 +1,21 @@
-﻿using Core.Entities;
+﻿using Core.Commands;
+using Core.Constants;
+using Core.Entities;
 using Core.GridSystem;
 using Core.Map;
 using Core.Math;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
-using System.Collections.Generic;
 using Editor.Helpers;
+using Editor.MapEditor.Commands;
+using Editor.MapEditor.Windows;
+using Managers.Log;
 
 namespace Editor.MapEditor.Views
 {
     public class SettingsPanelView
     {
-        public string SelectedSpriteId { get; set; }
-        public int SelectedLayerIndex { get; set; }
-        public Direction SelectedDirection { get; set; }
         public Vec2Int? SelectedCellPos { get; set; }
 
         private MapData _mapData;
@@ -23,7 +24,13 @@ namespace Editor.MapEditor.Views
 
         private ReorderableList _layerList;
         private GridCell _lastCellForList;
+        
+        private readonly CommandManager _commandManager;
 
+        public SettingsPanelView(CommandManager commandManager)
+        {
+            _commandManager = commandManager;
+        }
         public void SetMapData(MapData mapData)
         {
             _mapData = mapData;
@@ -33,23 +40,12 @@ namespace Editor.MapEditor.Views
         {
             GUILayout.Space(10);
             GUILayout.Label("Map Settings", EditorStyles.boldLabel);
-
-            GUILayout.Label("Selected Sprite ID: " + (SelectedSpriteId ?? "(None)"));
-            GUILayout.Label("Selected Cell: " + SelectedCellPos);
-            GUILayout.Label("Layer Index: " + SelectedLayerIndex);
-            GUILayout.Label("Direction: " + SelectedDirection);
-
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Toggle(SelectedDirection == Direction.Up, "↑", "Button")) SelectedDirection = Direction.Up;
-            if (GUILayout.Toggle(SelectedDirection == Direction.Right, "→", "Button")) SelectedDirection = Direction.Right;
-            if (GUILayout.Toggle(SelectedDirection == Direction.Down, "↓", "Button")) SelectedDirection = Direction.Down;
-            if (GUILayout.Toggle(SelectedDirection == Direction.Left, "←", "Button")) SelectedDirection = Direction.Left;
-            GUILayout.EndHorizontal();
-
-            if (_mapData == null || SelectedCellPos == null) return;
             
-            var cell = _mapData.GetCell(SelectedCellPos.Value);
-            if (cell != _lastCellForList)
+            GUILayout.Label("Selected Cell: " + SelectedCellPos);
+            
+            if (_mapData == null || SelectedCellPos == null) return;
+            var cell = _mapData.GetCellFromGrid(SelectedCellPos.Value);
+            if (_lastCellForList == null || !cell.Position.Equals(_lastCellForList.Position))
             {
                 SetupLayerList(cell.EditableSpriteLayers);
                 _lastCellForList = cell;
@@ -110,14 +106,14 @@ namespace Editor.MapEditor.Views
                 _mapData.enemies.Add(newEnemy);
             }
             
-            if (GUI.changed)
-                GUIUtility.ExitGUI();
+            
         }
 
-        private void SetupLayerList(List<SpriteLayer> layers)
+        private void SetupLayerList(SpriteLayer[] layers)
         {
-            _layerList = new ReorderableList(layers, typeof(SpriteLayer), true, true, true, true);
+            _layerList = new ReorderableList(layers, typeof(SpriteLayer), false, true, false, false);
 
+            
             _layerList.drawHeaderCallback = rect =>
             {
                 EditorGUI.LabelField(rect, "Sprite Layers");
@@ -125,17 +121,67 @@ namespace Editor.MapEditor.Views
 
             _layerList.drawElementCallback = (rect, index, isActive, isFocused) =>
             {
+                layers[index] ??= new SpriteLayer();
                 var layer = layers[index];
+
+                float labelWidth = 80f;
                 float w = rect.width / 3;
 
-                layer.SpriteId = EditorGUI.TextField(new Rect(rect.x, rect.y, w, EditorGUIUtility.singleLineHeight), layer.SpriteId);
-                layer.Direction = (Direction)EditorGUI.EnumPopup(new Rect(rect.x + w + 5, rect.y, w - 5, EditorGUIUtility.singleLineHeight), layer.Direction);
+                var label = LayerConstants.LayerNames.Length > index
+                    ? LayerConstants.LayerNames[index]
+                    : $"Layer {index}";
 
-                if (layer.SpriteId == null) return;
-                var sprite = TileSpriteDatabase.Get(layer.SpriteId);
-                if (sprite != null)
+                EditorGUI.LabelField(new Rect(rect.x, rect.y, labelWidth, EditorGUIUtility.singleLineHeight), $"[{label}]");
+
+                if (LayerConstants.EditableInEditor.Contains(index))
                 {
-                    GUI.DrawTexture(new Rect(rect.x + 2 * w + 10, rect.y, EditorGUIUtility.singleLineHeight, EditorGUIUtility.singleLineHeight), sprite.texture, ScaleMode.ScaleToFit);
+                    if (GUI.Button(new Rect(rect.x + labelWidth + 5, rect.y, w - labelWidth, EditorGUIUtility.singleLineHeight),
+                            string.IsNullOrEmpty(layer.SpriteId) ? "Select..." : layer.SpriteId))
+                    {
+                        string group = LayerConstants.LayerNames[index].ToLower(); // "ground", "path"...
+
+                        SpriteSelectorPopupWindow.Show(
+                            selectedId =>
+                            {
+                                var command = new SetSpriteLayerCommand(
+                                    _lastCellForList, index, selectedId, layer.Direction
+                                );
+                                _commandManager.ExecuteCommand(command);
+                            },
+                            sprite => sprite.name.StartsWith(group)
+                        );
+                    }
+
+                    Direction newDirection = (Direction)EditorGUI.EnumPopup(
+                        new Rect(rect.x + w + 5, rect.y, w - 5, EditorGUIUtility.singleLineHeight),
+                        layer.Direction
+                    );
+                    if (newDirection != layer.Direction)
+                    {
+                        var command = new SetSpriteLayerCommand(
+                            _lastCellForList, index, layer.SpriteId, newDirection
+                        );
+                        _commandManager.ExecuteCommand(command);
+                    }
+                }
+
+                else
+                {
+                    EditorGUI.LabelField(new Rect(rect.x + labelWidth + 5, rect.y, w - labelWidth, EditorGUIUtility.singleLineHeight),
+                        "(Runtime)");
+                }
+
+                if (!string.IsNullOrEmpty(layer.SpriteId))
+                {
+                    var sprite = TileSpriteDatabase.Get(layer.SpriteId);
+                    if (sprite != null)
+                    {
+                        GUI.DrawTexture(
+                            new Rect(rect.x + 2 * w + 10, rect.y, EditorGUIUtility.singleLineHeight, EditorGUIUtility.singleLineHeight),
+                            sprite.texture,
+                            ScaleMode.ScaleToFit
+                        );
+                    }
                 }
             };
         }

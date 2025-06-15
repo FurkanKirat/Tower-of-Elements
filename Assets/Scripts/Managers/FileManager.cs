@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Core.Constants;
 using Managers.Log;
 using UnityEditor;
 using UnityEngine;
@@ -49,7 +50,7 @@ namespace Managers
         }
 
         
-        public static List<string> GetFilesInDirectory(string directory, string extension = ".json") => 
+        public static List<string> GetFilesInDirectory(string directory, string extension = PathNames.Extensions.Json) => 
             Directory.Exists(directory) ? 
                 Directory.EnumerateFiles(directory)
                 .Where(file => Path.GetExtension(file).Equals(extension, StringComparison.OrdinalIgnoreCase))
