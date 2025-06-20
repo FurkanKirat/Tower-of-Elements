@@ -126,6 +126,8 @@ namespace Editor.MapEditor.Windows
 
         private void SaveToJson()
         {
+            foreach (var cell in _mapData.Grid) 
+                cell.RecalculateGridType();
             _mapData.cells.Clear();
             _mapData.UpdateCellList();
 

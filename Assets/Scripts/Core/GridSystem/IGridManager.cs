@@ -1,16 +1,19 @@
 ﻿using Core.Math;
-using Core.Tower;
+using UnityEngine;
 
 namespace Core.GridSystem
 {
     public interface IGridManager
     {
         IGridCell GetCell(int x, int y);
+        IGridCell GetCell(Vector2Int pos);
+        IGridCell GetCell(Vec2Int pos);
         bool IsInsideBounds(int x, int y);
+        bool IsInsideBounds(Vector2Int gridPos);
+        bool IsInsideBounds(Vec2Int gridPos);
         
-        bool PlaceTower(Vec2Int position, TowerInstance tower);
-        bool RemoveTower(Vec2Int position);
-        bool CanBuildAt(Vec2Int position);
-
+        bool IsBuildable(int x, int y);
+        bool IsBuildable(Vector2Int pos);
+        bool IsBuildable(Vec2Int pos);
     }
 }

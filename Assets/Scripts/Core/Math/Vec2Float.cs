@@ -24,6 +24,16 @@ namespace Core.Math
         {
             return new Vec2Float(a.x - b.x, a.y - b.y);
         }
+        
+        public static Vector2 operator -(Vec2Float a, Vector2 b)
+        {
+            return new Vector2(a.x - b.x, a.y - b.y);
+        }
+
+        public static Vector2 operator -(Vector2 a, Vec2Float b)
+        {
+            return new Vector2(a.x - b.x, a.y - b.y);
+        }
 
         public bool Equals(Vec2Float other)
         {
@@ -58,9 +68,10 @@ namespace Core.Math
             }
         }
 
-        public static implicit operator Vector2(Vec2Float v) => new Vector2(v.x, v.y);
-        public static implicit operator Vec2Float(Vector2 v) => new Vec2Float(v.x, v.y);
+        public static implicit operator Vector2(Vec2Float v) => new (v.x, v.y);
+        public static implicit operator Vec2Float(Vector2 v) => new (v.x, v.y);
 
+        public Vector2 ToVector2() => new Vector2(x, y);
         public override string ToString()
         {
             return $"{nameof(x)}: {x}, {nameof(y)}: {y}";

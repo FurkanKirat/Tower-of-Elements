@@ -239,6 +239,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapRenderer: {fileID: 1599688155}
+  towerBuilder: {fileID: 2121196636}
+  towerId: furkan
 --- !u!1 &997566395
 GameObject:
   m_ObjectHideFlags: 0

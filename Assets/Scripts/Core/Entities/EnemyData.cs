@@ -1,6 +1,5 @@
 ﻿using System;
 using Core.ElementSystem;
-using UnityEngine.Serialization;
 
 namespace Core.Entities
 {

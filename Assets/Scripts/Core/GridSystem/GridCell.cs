@@ -4,6 +4,7 @@ using Core.Constants;
 using Core.Math;
 using Core.Tower;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace Core.GridSystem
 {
@@ -15,7 +16,6 @@ namespace Core.GridSystem
         
         public GridType GridType { get; set; }
         public Vec2Int Position { get; set;}
-        public TowerInstance TowerInstance { get; set;}
         
         [JsonIgnore]
         public IReadOnlyList<SpriteLayer> SpriteLayers => _spriteLayers;
@@ -65,12 +65,11 @@ namespace Core.GridSystem
                     _spriteLayers[i] = new SpriteLayer();
             }
         }
-
-
+        
         public override string ToString()
         {
             return
-                $"{nameof(_spriteLayers)}: {_spriteLayers}, {nameof(GridType)}: {GridType}, {nameof(Position)}: {Position}, {nameof(TowerInstance)}: {TowerInstance}";
+                $"{nameof(_spriteLayers)}: {_spriteLayers}, {nameof(GridType)}: {GridType}, {nameof(Position)}: {Position}";
         }
     }
 

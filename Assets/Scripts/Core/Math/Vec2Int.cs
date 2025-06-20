@@ -53,7 +53,11 @@ namespace Core.Math
         }
         public static implicit operator Vector2Int(Vec2Int v) => new (v.x, v.y);
         public static implicit operator Vec2Int(Vector2Int v) => new(v.x, v.y);
+        public static implicit operator Vector3Int(Vec2Int v) => new (v.x, v.y);
+        public static implicit operator Vec2Int(Vector3Int v) => new(v.x, v.y);
 
+        public Vector2Int ToVector2Int() => new (x, y);
+        public Vec2Float ToVec2Float() => new (x, y);
         public override string ToString()
         {
             return $"{nameof(x)}: {x}, {nameof(y)}: {y}";

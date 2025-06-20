@@ -1,4 +1,5 @@
 ﻿
+using Core.Game;
 using Core.Physics;
 
 namespace Core.Interfaces
@@ -8,7 +9,7 @@ namespace Core.Interfaces
         public int InstanceId { get; set; }
         public AABB Hitbox { get; set; }
         
-        void UpdateLogic();
+        void UpdateLogic(IGameContext gameContext);
         void OnDestroy();
     }
 }

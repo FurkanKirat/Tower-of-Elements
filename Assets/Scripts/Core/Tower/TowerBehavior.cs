@@ -1,46 +1,34 @@
-﻿namespace Core.Tower
+﻿using Core.Game;
+
+namespace Core.Tower
 {
     using UnityEngine;
 
-    public class TowerBehaviour : MonoBehaviour
+    public class TowerBehaviour : MonoBehaviour, IGameContextUser
     {
         private TowerInstance _instance;
+        private IGameContext _gameContext;
 
         public void Initialize(TowerInstance instance)
         {
             _instance = instance;
         }
 
+        public void SetContext(IGameContext context)
+        {
+            _gameContext = context;
+        }
+
         private void Update()
         {
-            if (!_instance.IsPlaced)
+            if (_instance == null || _gameContext == null)
                 return;
 
-            _instance.CurrentCooldown -= Time.deltaTime;
-
-            if (_instance.CurrentCooldown <= 0f)
-            {
-                TryAttack();
-                _instance.CurrentCooldown = 1f / _instance.TowerStats.attackSpeed;
-            }
+            _instance.UpdateLogic(_gameContext);
+            
         }
 
-        private void TryAttack()
-        {
-            // hedef bulma
-            var target = FindNearestEnemy();
-            if (target != null)
-            {
-                // projectile fırlat, animasyon oynat, ses çal, vs.
-                Debug.Log($"Tower {_instance.TowerId} attacks {target.name}");
-            }
-        }
-
-        private GameObject FindNearestEnemy()
-        {
-            // buraya örnek enemy arama mantığı
-            return null;
-        }
+        public TowerInstance GetInstance() => _instance;
     }
 
 }

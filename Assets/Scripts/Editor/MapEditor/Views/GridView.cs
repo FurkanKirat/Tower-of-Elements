@@ -61,8 +61,10 @@ namespace Editor.MapEditor.Views
             {
                 for (int y = 0; y < _grid.GetLength(1); y++)
                 {
+                    int visualY = _grid.GetLength(1) - 1 - y;
                     var cell = _grid[x, y];
-                    Vector2 pos = new Vector2(x * _tileWidth, y * _tileHeight) * _zoom + offset;
+
+                    Vector2 pos = new Vector2(x * _tileWidth, visualY * _tileHeight) * _zoom + offset;
                     Rect tileRect = new Rect(pos.x, pos.y, _tileWidth * _zoom, _tileHeight * _zoom);
 
                     SpriteDrawUtil.DrawCellLayers(cell, tileRect);
@@ -72,7 +74,6 @@ namespace Editor.MapEditor.Views
                     {
                         currentCell = new Vec2Int(x, y);
 
-                        // Hover tracking
                         if (_hoveredCell == null || _hoveredCell.Value != currentCell.Value)
                         {
                             _hoveredCell = currentCell.Value;
@@ -81,7 +82,7 @@ namespace Editor.MapEditor.Views
                     }
                 }
             }
-
+            
             // Drag handling (sadece gridde mouse varsa)
             if (currentCell != null)
             {

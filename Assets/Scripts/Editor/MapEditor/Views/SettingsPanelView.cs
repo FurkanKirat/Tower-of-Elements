@@ -148,7 +148,7 @@ namespace Editor.MapEditor.Views
                                 );
                                 _commandManager.ExecuteCommand(command);
                             },
-                            sprite => sprite.name.StartsWith(group)
+                            sprite => sprite.name.Contains(group)
                         );
                     }
 

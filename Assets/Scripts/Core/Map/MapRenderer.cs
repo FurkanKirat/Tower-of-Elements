@@ -15,7 +15,7 @@ namespace Core.Map
         [SerializeField] private GameObject tilemapLayerPrefab;
         [SerializeField] private Grid grid;
 
-        private void Awake()
+        public void Initialize()
         {
             FitCameraExactly(GridConstants.GridWidth, GridConstants.GridHeight);
             

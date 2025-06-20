@@ -41,11 +41,10 @@ namespace Editor.MapEditor.Views
                         string.IsNullOrEmpty(_brushTool.SelectedSpriteId) ? "Select..." : _brushTool.SelectedSpriteId))
                 {
                     string group = LayerConstants.LayerNames[index].ToLower();
-
-                    GameLogger.Log("dsafdafssdaf");
+                    
                     SpriteSelectorPopupWindow.Show(
                         selectedId => { _brushTool.SelectedSpriteId = selectedId; },
-                        sprite => sprite.name.StartsWith(group)
+                        sprite => sprite.name.Contains(group)
                     );
                 }
 

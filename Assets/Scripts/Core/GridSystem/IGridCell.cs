@@ -9,7 +9,6 @@ namespace Core.GridSystem
     {
         GridType GridType { get; }
         Vec2Int Position { get; }
-        TowerInstance? TowerInstance { get; }
         IReadOnlyList<SpriteLayer> SpriteLayers { get; }
 
     }

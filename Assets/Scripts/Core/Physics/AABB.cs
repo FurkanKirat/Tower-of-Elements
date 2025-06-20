@@ -9,8 +9,8 @@ namespace Core.Physics
         public Vec2Float Center;
         public Vec2Float Size;
 
-        public Vec2Float Min => new Vec2Float(Center.x - Size.x / 2f, Center.y - Size.y / 2f);
-        public Vec2Float Max => new Vec2Float(Center.x + Size.x / 2f, Center.y + Size.y / 2f);
+        public Vec2Float Min => new (Center.x - Size.x / 2f, Center.y - Size.y / 2f);
+        public Vec2Float Max => new (Center.x + Size.x / 2f, Center.y + Size.y / 2f);
 
         public AABB(Vec2Float center, Vec2Float size)
         {
@@ -34,7 +34,7 @@ namespace Core.Physics
         {
             Center += delta;
         }
-
+        
         public override string ToString()
         {
             return $"AABB(Center: {Center}, Size: {Size})";

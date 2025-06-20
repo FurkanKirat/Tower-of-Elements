@@ -1,7 +1,7 @@
 using Core.Constants;
 using Core.Map;
 using Core.Math;
-using Core.Tower;
+using UnityEngine;
 
 namespace Core.GridSystem
 {
@@ -14,43 +14,32 @@ namespace Core.GridSystem
             _mapData = mapData;
         }
 
-        public IGridCell GetCell(int x, int y)
-        {
-            return _mapData.Grid[x, y];
-        }
+        public IGridCell GetCell(int x, int y) => _mapData.Grid[x, y];
+
+        public IGridCell GetCell(Vector2Int pos) => GetCell(pos.x, pos.y);
+
+        public IGridCell GetCell(Vec2Int pos) => GetCell(pos.x, pos.y);
 
         public bool IsInsideBounds(int x, int y)
         {
             return x >= 0 && x < GridConstants.GridWidth && y >= 0 && y < GridConstants.GridHeight;
         }
 
-        public bool PlaceTower(Vec2Int position, TowerInstance tower)
-        {
-            bool success = CanBuildAt(position);
-            if(success)
-                _mapData.Grid[position.x, position.y].TowerInstance = tower;
-            return success;
-        }
+        public bool IsInsideBounds(Vector2Int gridPos) => 
+            IsInsideBounds(gridPos.x, gridPos.y);
 
-        public bool RemoveTower(Vec2Int position)
-        {
-            if (!IsInsideBounds(position.x, position.y)) return false;
-            var cell = _mapData.Grid[position.x, position.y];
-            if (cell.GridType == GridType.Buildable && cell.TowerInstance != null)
-            {
-                cell.TowerInstance = null;
-                return true;
-            }
+        public bool IsInsideBounds(Vec2Int gridPos) =>
+            IsInsideBounds(gridPos.x, gridPos.y);
 
-            return false;
-        }
+        public bool IsBuildable(int x, int y) =>
+            _mapData.Grid[x, y]?.GridType == GridType.Buildable;
+        
 
-        public bool CanBuildAt(Vec2Int position)
-        {
-            if (!IsInsideBounds(position.x, position.y)) return false;
-            var cell = _mapData.Grid[position.x, position.y];
-            return cell.GridType == GridType.Buildable && cell.TowerInstance == null;
-        }
+        public bool IsBuildable(Vector2Int pos) =>
+            IsBuildable(pos.x, pos.y);
+
+        public bool IsBuildable(Vec2Int pos) =>
+            IsBuildable(pos.x, pos.y);
     }
 }
 
