@@ -70,12 +70,15 @@ namespace Core.Tower
 
             if (CurrentCooldown > 0)
                 return;
-            
-            _target ??= context.EnemyManager.FindClosestEnemy(Hitbox.Center, Range);
 
-            // In range eklenecek
-            if (_target != null && _target.IsAlive)
+            if (_target == null || !HitboxUtil.IntersectsCircle(Hitbox.Center, Range, _target.Hitbox))
             {
+                _target = context.EnemyManager.FindClosestEnemy(Hitbox.Center, Range);
+            }
+            
+            
+            if (_target != null && _target.IsAlive)
+            {   
                 _target.TakeDamage(TowerStats.damage);
                 CurrentCooldown = 1f / AttackSpeed;
             }

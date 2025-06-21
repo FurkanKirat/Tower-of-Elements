@@ -9,7 +9,7 @@ namespace Core.Game
     {
         public IGridManager GridManager { get; private set; }
         public IEnemyManager EnemyManager { get; private set; }
-        public TowerManager TowerManager { get; private set; }
+        public ITowerManager TowerManager { get; private set; }
         //public IWaveManager WaveManager { get; private set; }
         public IUIManager UIManager { get; private set; }
         public IGameManager GameManager { get; private set; }
@@ -17,7 +17,7 @@ namespace Core.Game
         public GameContext(
             IGridManager gridManager,
             IEnemyManager enemyManager,
-            TowerManager towerManager,
+            ITowerManager towerManager,
             //IWaveManager waveManager,
             IUIManager uiManager,
             IGameManager gameManager

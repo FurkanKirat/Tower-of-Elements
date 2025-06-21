@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Core.Game;
 using Core.Interfaces;
+using Core.Physics;
 using UnityEngine;
 
 namespace Core.Entities
@@ -49,7 +50,7 @@ namespace Core.Entities
             foreach (var enemy in _enemies)
             {
                 if (!enemy.IsAlive) continue;
-                float distSq = (enemy.Position - position).sqrMagnitude;
+                float distSq = HitboxUtil.GetDistanceToAABB(position, enemy.Hitbox);
                 if (distSq < minDistSq)
                 {
                     minDistSq = distSq;

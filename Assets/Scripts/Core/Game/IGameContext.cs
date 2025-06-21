@@ -9,7 +9,7 @@ namespace Core.Game
     {
         IGridManager GridManager { get; }
         IEnemyManager EnemyManager { get; }
-        TowerManager TowerManager { get; }
+        ITowerManager TowerManager { get; }
         //IWaveManager WaveManager { get; }
         IUIManager UIManager { get; }
         IGameManager GameManager { get; }
