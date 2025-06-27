@@ -14,29 +14,29 @@ namespace Core.Entities
         public bool isCrit;
         public bool isFlying;
         public bool isStunned;
+
+        private static readonly System.Random rand = new System.Random();
         
         
-        public void takeDamage(int damage)
+        public void TakeDamage(int damage)
         {
-            applyCritChance();
+            ApplyCritChance();
+            int finalDamage = damage;
             if (isCrit)
             {
-                currentHealth -= critDamage;
+                finalDamage = (int)(damage * (critDamage / 100f));
             }
-            else
-            {
-                currentHealth -= damage;
-            }
-            enemyDie();
+
+            currentHealth -= finalDamage;
+            EnemyDie();
         }
 
-        public void applyCritChance()
+        public void ApplyCritChance()
         {
-            Random rand = new Random();
             isCrit = critChance >= rand.NextDouble();
         }
         
-        public void enemyDie()
+        public void EnemyDie()
         {
             if (currentHealth <= 0)
             {
@@ -44,13 +44,13 @@ namespace Core.Entities
             }
         }
 
-        public void slowEffect(float slowingFactor, double slowingDuration)
+        public void SlowEffect(float slowingFactor, double slowingDuration)
         {
             movementSpeed *= slowingFactor;
             //slowDuration unity içinde yapılabilir
         }
 
-        public void heal(int heal)
+        public void Heal(int heal)
         {
             if (isAlive!)
             {
@@ -59,7 +59,7 @@ namespace Core.Entities
             }
         }
 
-        public void stunEnemy()
+        public void StunEnemy()
         {
             isStunned = true;
         }

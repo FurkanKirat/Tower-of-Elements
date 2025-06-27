@@ -80,7 +80,6 @@ public class Enemy : MonoBehaviour, IEnemy
 
     public void OnReachEnd()
     {
-        // Hedefe ulaşınca yapılacak işlemler (örnek: base'e zarar)
         Destroy(gameObject);
     }
 
@@ -149,7 +148,7 @@ public class Enemy : MonoBehaviour, IEnemy
     public void OnRemoved()
     {
         Debug.Log($"Enemy {InstanceId} destroyed.");
-        // Visual FX, sound, pooling vs.
+        
     }
     public bool IsAlive => enemyStats.currentHealth > 0;
 
