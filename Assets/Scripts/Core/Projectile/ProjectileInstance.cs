@@ -58,6 +58,12 @@ namespace Core.Projectile
             IsDestroyed = true;
         }
 
+        public void OnRemoved()
+        {
+            Debug.Log($"Enemy {InstanceId} destroyed.");
+        
+        }
+
         // 7. IGameObject.UpdateLogic(IGameContext)
         public void UpdateLogic(IGameContext context)
         {
