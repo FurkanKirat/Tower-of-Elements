@@ -77,4 +77,15 @@ namespace Core.Math
             return $"{nameof(x)}: {x}, {nameof(y)}: {y}";
         }
     }
+    
+    public static class Vec2FloatExtensions
+    {
+        public static Vec2Float Normalized(this Vec2Float v)
+        {
+            float mag = Mathf.Sqrt(v.x * v.x + v.y * v.y);
+            return mag > 0f
+                ? new Vec2Float(v.x / mag, v.y / mag)
+                : new Vec2Float(0f, 0f);
+        }
+    }
 }
