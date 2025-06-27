@@ -7,8 +7,8 @@ namespace Core.Entities
     public class EnemyData
     {
         public string enemyId;
+        public EnemyAssetData assetData;
         public ElementType element;
         public float spawnDelay;
-        public int level;
     }
 }

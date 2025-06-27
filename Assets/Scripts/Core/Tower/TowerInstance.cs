@@ -52,7 +52,7 @@ namespace Core.Tower
         }
         
         // 5. Game Loop
-        public void OnDestroy()
+        public void OnRemoved()
         {
             _target = null;
             SelectedUpgrades.Clear();

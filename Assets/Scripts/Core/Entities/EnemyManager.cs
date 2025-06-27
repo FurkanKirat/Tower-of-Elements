@@ -28,7 +28,7 @@ namespace Core.Entities
 
                 if (!enemy.IsAlive)
                 {
-                    enemy.OnDestroy();
+                    enemy.OnRemoved();
                     _enemies.RemoveAt(i);
                 }
             }
@@ -37,7 +37,7 @@ namespace Core.Entities
         public void ClearAllEnemies()
         {
             foreach (var enemy in _enemies)
-                enemy.OnDestroy();
+                enemy.OnRemoved();
             
             _enemies.Clear();
         }
